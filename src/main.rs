@@ -4,6 +4,7 @@ use std::fs::File;
 use std::path::Path;
 use csv::ReaderBuilder;
 
+#[derive(Debug, Clone)]
 struct NameData {
     year: u32,
     gender: String,
@@ -56,6 +57,19 @@ impl Graph {
                 self.dfs(edge.target, visited);
             }
         }
+    }
+
+    fn analyze_graph(&self) {
+        println!("Number of nodes in the graph: {}", self.node_count());
+        println!("Number of edges in the graph: {}", self.edges.len());
+
+        let mut gender_ethnicity_count: HashMap<(&String, &String), u32> = HashMap::new();
+        for node in &self.nodes {
+            *gender_ethnicity_count.entry((&node.gender, &node.ethnicity)).or_insert(0) += node.count;
+        }
+
+        println!("Total count of names that share both gender and ethnicity:");
+        
     }
 }
 fn main() {
