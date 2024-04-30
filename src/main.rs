@@ -69,7 +69,9 @@ impl Graph {
         }
 
         println!("Total count of names that share both gender and ethnicity:");
-        
+        for ((gender, ethnicity), count) in &gender_ethnicity_count {
+            println!("Gender: {}, Ethnicity: {}: {}", gender, ethnicity, count);
+        }
     }
 }
 fn main() {
