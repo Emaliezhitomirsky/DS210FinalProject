@@ -74,9 +74,31 @@ impl Graph {
         }
     }
 }
-fn main() {
-    
+fn main() -> Result<(), Box<dyn Error>> {
+    let file_path = "Popular_Baby_Names.csv";
+    let mut rdr = ReaderBuilder::new().has_headers(true).from_path(file_path)?;
+
+    let mut graph = Graph::new();
+    for result in rdr.records() {
+        if let Ok(record) = result {
+            if let Some(name_data) = NameData::from_record(record) {
+                let node_index = graph.node_count();
+                graph.add_node(name_data.clone());
+                let similar_nodes: Vec<usize> = graph.nodes.iter().enumerate().filter_map(|(idx, node)| {
+                    if node.gender == name_data.gender && node.ethnicity == name_data.ethnicity {
+                        Some(idx)
+                    } else { None }
+                }).collect();
+                for &similar_node in &similar_nodes {
+                    if similar_node != node_index { graph.add_edge(similar_node, node_index); }
+                }
+            }
+        }
+    }
+
+    let start_node = 0; 
+    let mut visited = vec![false; graph.node_count()];
+    graph.dfs(start_node, &mut visited);
+    graph.analyze_graph();
+    Ok(())
 }
-
-
-// test test 
