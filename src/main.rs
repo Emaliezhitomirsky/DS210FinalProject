@@ -154,3 +154,45 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_count_names_by_starting_letter() {
+        let name_data = NameData {
+            year: 2022,
+            gender: String::from("MALE"),
+            ethnicity: String::from("ASIAN AND PACIFIC ISLANDER"),
+            name: String::from("Aaron"),
+            count: 5,
+            rank: 1,
+        };
+
+        let mut graph = Graph::new();
+        graph.add_node(name_data.clone());
+
+        let starting_letter_counts = graph.count_names_by_starting_letter();
+
+        let expected_result: HashMap<(String, String), HashMap<char, u32>> = [
+            ((String::from("MALE"), String::from("ASIAN AND PACIFIC ISLANDER")), {
+                let mut map = HashMap::new();
+                map.insert('A', 5);
+                map
+            }), 
+        ].iter().cloned().collect();  
+
+        let starting_letter_counts: HashMap<(_, _), _> = starting_letter_counts
+            .into_iter()
+            .map(|((gender, ethnicity), map)| ((gender.clone(), ethnicity.clone()), map))
+            .collect();  
+
+        assert_eq!(starting_letter_counts, expected_result);
+    }
+
+    #[test]
+    fn test_main_function() {
+        assert!(main().is_ok());
+    }
+}
